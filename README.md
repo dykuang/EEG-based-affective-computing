@@ -9,7 +9,7 @@ A repo for exploring deep learning methods on EEG-based affective computing task
   title="network design"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
 <img
-  src="Node_fusion.png"
+  src="NodeFusion.png"
   width="400" 
   height="400"
   alt="Alt text"
