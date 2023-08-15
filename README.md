@@ -20,7 +20,7 @@ Current codes are accompanying our work in [...](...). A key design in our HiSTN
 ---
 
 With the proposed spatially smoothed label encoding, models can learn a representation space 
-with better qualitative behavior during training.   
+with better qualitative behavior.   
 <img
   src="featureV3_T.png"
   width="400" 
