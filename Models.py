@@ -182,6 +182,8 @@ def EEGNet(Prob_model, nb_classes, LabelMode, Chans = 64, Samples = 128,
     # # # # # block2       = K_attention_MH(num_heads=2, name='Katt')(block2)
     # # # # # block2       = qKv_attention(dim=16, num_heads=4, dropout_rate=0.003,
     # # # #                             #  name='Katt')(block2,kernel='Linear',use_mask=False)
+    ######### block2       = My_MHSA(dim=16, num_heads=4, dropout_rate=0.0,name='MHSA')(block2)
+
     # block2       = layers.Lambda(lambda x: x[...,None,:])(block2)
 
     block2       = layers.BatchNormalization(axis = -1, name = 'BN-3')(block2)
@@ -205,6 +207,8 @@ def EEGNet(Prob_model, nb_classes, LabelMode, Chans = 64, Samples = 128,
     # # # # # # block2       = K_attention_MH(num_heads=2, name='Katt')(block2)
     # # # # # # block2       = qKv_attention(dim=16, num_heads=4, dropout_rate=0.003,
     # # # # #                             #  name='Katt')(block2,kernel='Linear',use_mask=False)
+    ########### block2       = My_MHSA(dim=16, num_heads=4, dropout_rate=0.0,name='MHSA')(block2)
+
     # # # block2       = layers.Permute((2,1))(block2)
     # # block2       = layers.Lambda(lambda x: x[...,None,:])(block2)
 

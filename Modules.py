@@ -1142,10 +1142,11 @@ class My_MHSA(layers.Layer):
 
     def build(self, input_shape):
         _,_,channels = input_shape
+        # _, self.Tsize,channels = input_shape
         self.proj = layers.Dense(channels, activation='linear', name='proj')
 
     def call(self, x, mask=None):
-        _, size, channels = x.shape
+        _, size, channels = x.shape  # in newer tenorflow(2.14.0), size can be None, in which case use the commented line in build method
 
         x_qkv = self.qkv(x)
         head_dim = self.dim//self.num_heads
