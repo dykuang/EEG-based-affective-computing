@@ -141,6 +141,48 @@ print('Std: {}'.format('closeness'))
 print(100*np.std(HST_OneHot_V_Pretrained['closeness'], axis=0))
 print(100*np.std(HST_OneHot_V_Alone['closeness'], axis=0))
 print('\n') 
+
+
+#%%
+'''
+Statistical Test for the difference between two groups
+'''
+from scipy import stats
+
+# comparing with DiffPool as the hierarchy core
+for label_token in ['V', 'A']:
+    print('prediction in {}'.format(label_token))
+    HST_OneHot_Pretrained = fetch_performance('HST', 'OneHot', label_token, True)
+    DP_OneHot_Pretrained = fetch_performance('HSTDP', 'OneHot', label_token, True)
+    HST_F1 = HST_OneHot_Pretrained['F1']
+    HST_seq2hr = HST_OneHot_Pretrained['closeness']
+    DP_F1 = DP_OneHot_Pretrained['F1']
+    DP_seq2hr = DP_OneHot_Pretrained['closeness']
+    # wilcoxon
+    print('Wilcoxon Test:')
+    print( stats.wilcoxon(DP_F1, HST_F1, alternative='less') )
+    print(stats.wilcoxon(DP_seq2hr[:,-1], HST_seq2hr[:,-1], alternative='less'))
+
+
+    # paired t-test
+    print('paired t-test:')
+    print(stats.ttest_rel(DP_F1, HST_F1, alternative='less'))
+    print(stats.ttest_rel(DP_seq2hr[:,-1], HST_seq2hr[:,-1], alternative='less'))
+
+# Within each model, comparing the effectiveness of label encoding
+for label_token in ['V', 'A']:
+    for modelname in ['EEGNet', 'MSBAM', 'HST']:
+        print('prediction in {} with model {}'.format(label_token, modelname))
+        OneHot_Pretrained = fetch_performance(modelname, 'OneHot_N', label_token, True)
+        Smooth_Pretrained = fetch_performance(modelname, 'OneHot', label_token, True)
+        OneHot_seq2hr = OneHot_Pretrained['closeness'][:,-1]
+        Smooth_seq2hr = Smooth_Pretrained['closeness'][:,-1]
+        print('Wilcoxon Test:')
+        print( stats.wilcoxon(OneHot_seq2hr, Smooth_seq2hr, alternative='less') )
+        print('paired t-test:')
+        print( stats.ttest_rel(OneHot_seq2hr, Smooth_seq2hr, alternative='less') )
+
+
 # %%
 '''
 Box Plot

@@ -120,3 +120,21 @@ def get_target_performance(encoding_type, label_token):
     print('='*60)
 
 # %%
+'''
+Statistical Test for the difference between two groups
+'''
+from scipy import stats
+
+# Within each model, comparing the effectiveness of label encoding
+for label_token in ['V', 'A']:
+    for modelname in ['EEGNet', 'MSiBAM', 'HST']:
+        print('prediction in {} with model {}'.format(label_token, modelname))
+        OneHot_record =  gather_all_subject(modelname, 'OneHot_N', label_token)
+        Smooth_record =  gather_all_subject(modelname, 'OneHot', label_token)
+        OneHot_seq2hr =  OneHot_record['closeness'][:,-1]
+        Smooth_seq2hr = _Smooth_record['closeness'][:,-1]
+        print('Wilcoxon Test:')
+        print( stats.wilcoxon(OneHot_seq2hr, Smooth_seq2hr, alternative='less') )
+        print('paired t-test:')
+        print( stats.ttest_rel(OneHot_seq2hr, Smooth_seq2hr, alternative='less') )
+# %%
