@@ -61,4 +61,6 @@ The following scripts are for gathering relevant benchmark results and making pl
 `Metrics.py`: Some custom metrics for monitoring during training.  
 `utils.py`: Some utility functions.  
 
+SomeSupplement contains some supplement observations in our experiments.
+
 
