@@ -1,7 +1,7 @@
 # EEG-based-affective-computing
 A repo for exploring deep learning methods on EEG-based affective computing tasks.  
 
-Current codes are accompanying our work in [...](...). A key design in our HiSTN framework for model's temporal-spatial hierarchy construction is illustrated as below:  
+Current codes are accompanying our work in ([Emotion Classification from Multi-Channel EEG Signals Using HiSTN: A Hierarchical Graph-based Spatial-Temporal Approach](https://arxiv.org/abs/2408.15255)). A key design in our HiSTN framework for model's temporal-spatial hierarchy construction is illustrated as below:  
 
 <img
   src="design-v1.png"
