@@ -741,3 +741,81 @@ for label_code in ['V', 'A']:
 
 
 # %%
+'''
+For recording the inference time and memory usage
+'''
+import time
+import tracemalloc
+def measure_inference(model, input_data, repeat=10):
+    times = []
+    tracemalloc.start()
+    for _ in range(repeat):
+        start_time = time.time()
+        _ = model.predict(input_data)
+        times.append(time.time() - start_time)
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print(f'Average inference time over {repeat} runs: {np.mean(times):.4f} seconds')
+    print(f'Standard deviation of inference time: {np.std(times):.4f} seconds')
+    print(f'Peak memory usage during inference: {peak / 1024 / 1024:.2f} MB')
+    return np.mean(times), np.std(times), peak/ 1024 / 1024, times
+
+# Example usage:
+# model = load_model_SD(Subject, 'OneHot', 'A', ModelKey='HST')
+# input_data = X_segs  # or X_segs_M for MSBAM
+# measure_inference(model, input_data)
+
+def get_inference_time_and_memory(Subject, LabelMode, Label_Code, 
+                                  ModelKey='HST',
+                                  repeat=10):
+
+    model = load_model_SD(Subject, LabelMode, Label_Code, ModelKey)
+    X = loadmat('/mnt/HDD/Datasets/DREAMER/S{:02d}_1min.mat'.format(Subject))['X'].transpose((1,0,2))
+    X_prep = lambda x: x/np.max(np.abs(x), axis=1, keepdims=True)
+    X = X_prep(X)
+    X_segs = make_segs(X, 128, 128)
+    
+    if ModelKey == 'MSBAM':
+        X_segs_M = Embed_X(X_segs)
+        input_data = X_segs_M
+    else:
+        input_data = X_segs
+
+    return measure_inference(model, input_data, repeat)
+
+# get_inference_time_and_memory(3, 'OneHot', 'V', ModelKey='HST', repeat=100)
+
+# HST: 
+# Average inference time over 100 runs: 0.0946 seconds
+# Standard deviation of inference time: 0.0260 seconds
+# Peak memory usage during inference: 9.94 MB
+
+# EEGNet:
+# Average inference time over 100 runs: 0.0682 seconds
+# Standard deviation of inference time: 0.0090 seconds
+# Peak memory usage during inference: 9.58 MB
+
+# MSBAM:
+# Average inference time over 100 runs: 0.1104 seconds
+# Standard deviation of inference time: 0.0196 seconds
+# Peak memory usage during inference: 45.05 MB
+
+# %%
+_m,_s,_p,t = get_inference_time_and_memory(3, 'OneHot', 'V', ModelKey='HST', repeat=100)
+_mm,_ss,_pp,tt = get_inference_time_and_memory(3, 'OneHot', 'V', ModelKey='MSBAM', repeat=100)
+_mmm,_sss,_ppp,ttt = get_inference_time_and_memory(3, 'OneHot', 'V', ModelKey='EEGNet', repeat=100)
+#%%
+plt.figure(figsize=(8, 6))
+sns.kdeplot(ttt, label='EEGNet', fill=True, color='g', alpha=0.5)
+sns.kdeplot(tt, label='MSBAM', fill=True, color='b', alpha=0.5)
+sns.kdeplot(t, label='HST', fill=True, color='r', alpha=0.5)
+plt.text(0.95, 0.45, 
+         f'Peak Memory Usage (MB):\nEEGNet: {_ppp:.2f}\nMSBAM: {_pp:.2f}\nHST: {_p:.2f}', 
+         transform=plt.gca().transAxes, fontsize=12, verticalalignment='top', horizontalalignment='right',
+         bbox=dict(facecolor='white', alpha=0.7, edgecolor='gray'))
+plt.xlabel('Inference Time (seconds)')
+plt.ylabel('Density')
+plt.title('Inference Time Distribution Comparison')
+plt.legend()
+plt.grid(True)
+plt.show()
